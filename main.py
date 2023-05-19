@@ -385,20 +385,6 @@ def initialize_gui(agent_summaries, director_name):
         """
     )
 
-    # Hubert Thieblot, Edward Saatchi, Jim Fan, Joon Park, Jack Soslow, and Michael Chang
-
-    #     if name == "Hubert Thieblot":
-    #     voice = "Adam"
-    # elif name == "Edward Saatchi":
-    #     voice = "Arnold"
-    # elif name == "Jim Fan":
-    #     voice = "Josh"
-    # elif name == "Joon Park":
-    #     voice = "Sam"
-    # elif name == "Jack Soslow":
-    #     voice = "Antoni"
-    # elif name == "Michael Chang":
-    #     name = "like_kanye"
     st.sidebar.write(
         f"""
     # About
