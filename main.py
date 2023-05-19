@@ -141,7 +141,7 @@ Follow up with an insightful comment.
             input_variables=["message_history", "speaker_names"],
             template=f"""{{message_history}}
 
-Given the above conversation, select the next speaker by choosing index next to their name:
+Given the above conversation, select a new speaker by choosing index next to their name:
 {{speaker_names}}
 
 {self.choice_parser.get_format_instructions()}
