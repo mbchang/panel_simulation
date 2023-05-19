@@ -337,7 +337,7 @@ def initialize_simulation(
     director = DirectorDialogueAgent(
         name=director_name,
         system_message=agent_system_messages[0],
-        model=ChatOpenAI(model_name=openai_api_model, temperature=0.2),
+        model=ChatOpenAI(model_name=openai_api_model, temperature=0.5),
         speakers=[name for name in agent_summaries if name != director_name],
         stopping_probability=termination_probability,
     )
