@@ -552,7 +552,7 @@ def main():
             ),
             "Edward Saatchi": (
                 "Founder, Fable Simulation",
-                "You co-founded Fable Studio, which focuses on creating 'virtual beings' - characters that use AI and VR to provide interactive and immersive storytelling experiences.",
+                "You co-founded Fable Studio, which focuses on creating 'virtual beings' - characters that use AI and VR to provide interactive and immersive storytelling experiences, and you are interested in using agent simulations as a new paradigm for training AGIs.",
             ),
             "Jim Fan": (
                 "AI Scientist, Nvidia",
