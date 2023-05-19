@@ -535,7 +535,7 @@ def play_voice(text, name):
     elif name == "Michael Chang":
         name = "like_kanye"
     elif name == "Audience member":
-        voice = "moderator"
+        voice = "Rachel"
     else:
         raise ValueError(f"No picture for name: {name}")
 
