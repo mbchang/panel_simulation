@@ -21,6 +21,8 @@ from langchain.schema import (
     SystemMessage,
 )
 
+WITH_SOUND = False
+
 
 class DialogueAgent:
     def __init__(
@@ -392,16 +394,20 @@ def initialize_gui(agent_summaries, director_name):
     openai_api_key = st.sidebar.text_input("Your OpenAI API KEY", type="password")
     os.environ["OPENAI_API_KEY"] = openai_api_key
 
-    sound_on = st.sidebar.checkbox("Enable Sound")
-    if sound_on:
-        eleven_api_key = st.sidebar.text_input(
-            "Your Eleven Labs API Key", type="password"
-        )
-        os.environ["ELEVEN_API_KEY"] = eleven_api_key
-    else:
-        st.sidebar.write("Sound is turned off.")
+    if WITH_SOUND:
+        sound_on = st.sidebar.checkbox("Enable Sound")
+        if sound_on:
+            eleven_api_key = st.sidebar.text_input(
+                "Your Eleven Labs API Key", type="password"
+            )
+            os.environ["ELEVEN_API_KEY"] = eleven_api_key
+        else:
+            st.sidebar.write("Sound is turned off.")
 
-    debug_sound = st.sidebar.checkbox("Debug Sound")
+        debug_sound = st.sidebar.checkbox("Debug Sound")
+    else:
+        sound_on = False
+        debug_sound = False
 
     termination_probability = st.sidebar.slider(
         label="Termination Probability",
@@ -514,7 +520,7 @@ def output(name, message, sound_on=False, debug_sound=True):
     print("\n")
 
     # remove text delimited by asterisks from message
-    if sound_on:
+    if sound_on and WITH_SOUND:
         message = re.sub(r"\*.*?\*", "", message)
         if debug_sound:
             play_voice(message[:20], name=name)
