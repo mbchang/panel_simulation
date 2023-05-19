@@ -406,8 +406,8 @@ def initialize_gui(agent_summaries, director_name):
         label="Termination Probability",
         min_value=0.0,
         max_value=1.0,
-        step=0.05,
-        value=0.05,
+        step=0.01,
+        value=0.01,
     )
 
     openai_api_model = st.sidebar.selectbox(
