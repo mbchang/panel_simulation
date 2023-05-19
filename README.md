@@ -1,5 +1,5 @@
 # Panel Simulations
-Generate a fake panel discussion about any topic for the AI SF Summit https://aisf.co/.
+Generate a fake panel discussion about any topic for the AI SF Summit https://aisf.co/. Play with it [here](https://mbchang-panel-simulation-main-k6i8aa.streamlit.app/).
 
 ## About
 
