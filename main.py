@@ -366,7 +366,7 @@ def initialize_simulation(topic, agent_summaries, director_name, openai_api_mode
 
 
 def initialize_gui(agent_summaries, director_name):
-    title = "AISF Panel Simulation"
+    title = "[AISF](https://aisf.co/) Panel Simulation"
     st.set_page_config(
         initial_sidebar_state="expanded",
         page_title=title,
@@ -374,10 +374,31 @@ def initialize_gui(agent_summaries, director_name):
     )
     st.title(title)
     st.write(
-        f"""Generate a fake panel discussion about any topic among fictitious renditions of {list_to_string(list(agent_summaries.keys()))}.
+        f"""Generate a fake panel discussion about any topic among fictitious renditions of
+        [Hubert Thieblot](https://en.wikipedia.org/wiki/Hubert_Thieblot),
+        [Edward Saatchi](https://en.wikipedia.org/wiki/Edward_Saatchi),
+        [Jim Fan](https://jimfan.me/),
+        [Joon Park](http://www.joonsungpark.com/),
+        [Jack Soslow](https://twitter.com/JackSoslow), and
+        [Michael Chang](https://mbchang.github.io/).
         {director_name} will moderate.
         """
     )
+
+    # Hubert Thieblot, Edward Saatchi, Jim Fan, Joon Park, Jack Soslow, and Michael Chang
+
+    #     if name == "Hubert Thieblot":
+    #     voice = "Adam"
+    # elif name == "Edward Saatchi":
+    #     voice = "Arnold"
+    # elif name == "Jim Fan":
+    #     voice = "Josh"
+    # elif name == "Joon Park":
+    #     voice = "Sam"
+    # elif name == "Jack Soslow":
+    #     voice = "Antoni"
+    # elif name == "Michael Chang":
+    #     name = "like_kanye"
     st.sidebar.write(
         f"""
     # About
