@@ -5,6 +5,7 @@ from enum import Enum
 import functools
 import os
 from PIL import Image, ImageDraw, ImageOps
+from playsound import playsound
 import random
 import re
 import streamlit as st
@@ -321,7 +322,7 @@ def initialize_simulation(
         HumanMessage(
             content=f"""{conversation_description}
 
-            Please elaborate on the topic to generate hype about cool and exciting applications.
+            Please elaborate on the topic to generate hype about communication and human-AI interaction.
             Frame the topic as a single question to be answered.
             Be creative and imaginative.
             Please reply with the specified topic in 50 words or less.
