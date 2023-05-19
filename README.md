@@ -1,5 +1,5 @@
-# panel_simulation
-A simulated panel discussion of the AI SF Summit https://aisf.co/
+# Panel Simulations
+Generate a fake panel discussion about any topic for the AI SF Summit https://aisf.co/.
 
 ## About
 
