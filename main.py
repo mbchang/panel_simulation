@@ -540,7 +540,12 @@ def play_voice(text, name):
     else:
         raise ValueError(f"No picture for name: {name}")
 
-    elevenlabs.play(elevenlabs.generate(text, voice=voice))
+    # elevenlabs.play(elevenlabs.generate(text, voice=voice))
+    audio = elevenlabs.generate(text, voice=voice)
+    # elevenlabs.play(audio)
+    elevenlabs.save(audio, f"{name}.mpeg")
+    playsound(f"{name}.mpeg")
+    os.remove(f"{name}.mpeg")
 
 
 def main():
