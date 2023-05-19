@@ -321,7 +321,7 @@ def initialize_simulation(
         HumanMessage(
             content=f"""{conversation_description}
 
-            Please elaborate on the topic to generate hype.
+            Please elaborate on the topic to generate hype about cool and exciting applications.
             Frame the topic as a single question to be answered.
             Be creative and imaginative.
             Please reply with the specified topic in 50 words or less.
