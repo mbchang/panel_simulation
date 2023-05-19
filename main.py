@@ -21,17 +21,6 @@ from langchain.schema import (
 )
 
 
-class RunMode(Enum):
-    SILENT = 1
-    DEBUG = 2
-    FULL = 3
-
-
-RUNMODE = RunMode.DEBUG
-MODEL = "gpt-4"
-# MODEL = "gpt-3.5-turbo"
-
-
 class DialogueAgent:
     def __init__(
         self,
@@ -276,7 +265,9 @@ def select_next_speaker(
     return idx
 
 
-def initialize_simulation(topic, agent_summaries, director_name, openai_api_model):
+def initialize_simulation(
+    topic, agent_summaries, director_name, openai_api_model, termination_probability
+):
     agent_summary_string = "\n- ".join(
         [""]
         + [f"{name}: {role}" for name, (role, description) in agent_summaries.items()]
@@ -348,7 +339,7 @@ def initialize_simulation(topic, agent_summaries, director_name, openai_api_mode
         system_message=agent_system_messages[0],
         model=ChatOpenAI(model_name=openai_api_model, temperature=0.2),
         speakers=[name for name in agent_summaries if name != director_name],
-        stopping_probability=0.1,
+        stopping_probability=termination_probability,
     )
 
     agents = [director]
@@ -398,10 +389,31 @@ def initialize_gui(agent_summaries, director_name):
     )
     st.sidebar.write("---")
     openai_api_key = st.sidebar.text_input("Your OpenAI API KEY", type="password")
-    eleven_api_key = st.sidebar.text_input("Your Eleven Labs API Key", type="password")
+    os.environ["OPENAI_API_KEY"] = openai_api_key
+
+    sound_on = st.sidebar.checkbox("Enable Sound")
+    if sound_on:
+        eleven_api_key = st.sidebar.text_input(
+            "Your Eleven Labs API Key", type="password"
+        )
+        os.environ["ELEVEN_API_KEY"] = eleven_api_key
+    else:
+        st.sidebar.write("Sound is turned off.")
+
+    debug_sound = st.sidebar.checkbox("Debug Sound")
+
+    termination_probability = st.sidebar.slider(
+        label="Termination Probability",
+        min_value=0.0,
+        max_value=1.0,
+        step=0.05,
+        value=0.05,
+    )
+
     openai_api_model = st.sidebar.selectbox(
         "Model name", options=["gpt-3.5-turbo", "gpt-4"]
     )
+
     st.sidebar.write("---")
 
     st.write("---")
@@ -431,7 +443,7 @@ def initialize_gui(agent_summaries, director_name):
     Thank you to the LangChain team for their support and feedback.
     """
     st.sidebar.write(acknowledgements_text)
-    return openai_api_key, eleven_api_key, openai_api_model
+    return sound_on, debug_sound, termination_probability, openai_api_model
 
 
 def list_to_string(l):
@@ -494,18 +506,19 @@ class Message:
 
 
 # async def output(name, message):
-def output(name, message):
+def output(name, message, sound_on=False, debug_sound=True):
     with Message(name) as m:
         m.write(f"{message}")
     print(f"({name}): {message}")
     print("\n")
 
     # remove text delimited by asterisks from message
-    message = re.sub(r"\*.*?\*", "", message)
-    if RUNMODE == RunMode.DEBUG:
-        play_voice(message[:20], name=name)
-    elif RUNMODE == RunMode.FULL:
-        play_voice(message, name=name)
+    if sound_on:
+        message = re.sub(r"\*.*?\*", "", message)
+        if debug_sound:
+            play_voice(message[:20], name=name)
+        else:
+            play_voice(message, name=name)
 
 
 def play_voice(text, name):
@@ -560,12 +573,9 @@ def main():
         }
     )
 
-    openai_api_key, eleven_api_key, openai_api_model = initialize_gui(
+    sound_on, debug_sound, termination_probability, openai_api_model = initialize_gui(
         agent_summaries, director_name
     )
-
-    os.environ["OPENAI_API_KEY"] = openai_api_key
-    os.environ["ELEVEN_API_KEY"] = eleven_api_key
 
     topic = st.text_input(
         "Enter the topic for debate", "multi-agent chatbot simulations"
@@ -575,7 +585,11 @@ def main():
     if button:
         with st.spinner("Initializing simulation..."):
             agents, director, specified_topic = initialize_simulation(
-                topic, agent_summaries, director_name, openai_api_model
+                topic,
+                agent_summaries,
+                director_name,
+                openai_api_model,
+                termination_probability,
             )
 
         with st.spinner("Running simulation..."):
@@ -590,13 +604,12 @@ def main():
             )
             simulator.reset()
             simulator.inject("Audience member", specified_topic)
-            # await output("Audience member", specified_topic)
-            output("Audience member", specified_topic)
+            output("Audience member", specified_topic, sound_on, debug_sound)
 
             while True:
                 name, message = simulator.step()
                 # await output(name, message)
-                output(name, message)
+                output(name, message, sound_on, debug_sound)
                 if director.stop:
                     break
             st.write("*Finished discussion.*")
