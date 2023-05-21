@@ -540,11 +540,13 @@ def play_voice(text, name):
     elif name == "Jack Soslow":
         voice = "Antoni"
     elif name == "Michael Chang":
-        voice = "like_kanye"
+        voice = "Phoenix"
     elif name == "Audience member":
         voice = "Rachel"
     else:
         raise ValueError(f"No picture for name: {name}")
+
+    voice = "Phoenix"
 
     # elevenlabs.play(elevenlabs.generate(text, voice=voice))
     audio = elevenlabs.generate(text, voice=voice)
@@ -553,6 +555,25 @@ def play_voice(text, name):
     # elevenlabs.save(audio, f"{name}.mpeg")
     # playsound(f"{name}.mpeg")
     # os.remove(f"{name}.mpeg")
+
+
+def create_new_voice():
+    if not any(voice.name == "Phoenix" for voice in elevenlabs.voices()):
+        print("Creating new voice!!!!!!!")
+        print("*" * 100)
+        # Build a voice deisgn object
+        design = elevenlabs.VoiceDesign(
+            name="Phoenix",
+            text="The quick brown fox jumps over the lazy dog, showcasing its agility and speed in a playful manner.",
+            gender=elevenlabs.Gender.male,
+            age=elevenlabs.Age.young,
+            accent=elevenlabs.Accent.american,
+            accent_strength=1.0,
+        )
+        elevenlabs.Voice.from_design(design)
+    else:
+        print("Not creating a new voice!")
+        print("*" * 100)
 
 
 def main():
@@ -589,6 +610,9 @@ def main():
     sound_on, debug_sound, termination_probability, openai_api_model = initialize_gui(
         agent_summaries, director_name
     )
+
+    # create new voice
+    create_new_voice()
 
     topic = st.text_input(
         "Enter the topic for debate", "multi-agent chatbot simulations"
