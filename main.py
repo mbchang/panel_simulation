@@ -21,7 +21,7 @@ from langchain.schema import (
     SystemMessage,
 )
 
-WITH_SOUND = False
+WITH_SOUND = True
 
 
 class DialogueAgent:
