@@ -540,7 +540,7 @@ def play_voice(text, name):
     elif name == "Jack Soslow":
         voice = "Antoni"
     elif name == "Michael Chang":
-        name = "like_kanye"
+        voice = "like_kanye"
     elif name == "Audience member":
         voice = "Rachel"
     else:
