@@ -548,7 +548,8 @@ def play_voice(text, name):
 
     # elevenlabs.play(elevenlabs.generate(text, voice=voice))
     audio = elevenlabs.generate(text, voice=voice)
-    elevenlabs.play(audio)
+    st.audio(audio)
+    # elevenlabs.play(audio)
     # elevenlabs.save(audio, f"{name}.mpeg")
     # playsound(f"{name}.mpeg")
     # os.remove(f"{name}.mpeg")
