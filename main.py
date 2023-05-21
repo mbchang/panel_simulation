@@ -546,21 +546,13 @@ def play_voice(text, name):
     else:
         raise ValueError(f"No picture for name: {name}")
 
-    voice = "Phoenix"
-
-    # elevenlabs.play(elevenlabs.generate(text, voice=voice))
     audio = elevenlabs.generate(text, voice=voice)
     st.audio(audio)
     # elevenlabs.play(audio)
-    # elevenlabs.save(audio, f"{name}.mpeg")
-    # playsound(f"{name}.mpeg")
-    # os.remove(f"{name}.mpeg")
 
 
 def create_new_voice():
     if not any(voice.name == "Phoenix" for voice in elevenlabs.voices()):
-        print("Creating new voice!!!!!!!")
-        print("*" * 100)
         # Build a voice deisgn object
         design = elevenlabs.VoiceDesign(
             name="Phoenix",
@@ -571,9 +563,6 @@ def create_new_voice():
             accent_strength=1.0,
         )
         elevenlabs.Voice.from_design(design)
-    else:
-        print("Not creating a new voice!")
-        print("*" * 100)
 
 
 def main():
