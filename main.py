@@ -564,7 +564,7 @@ def create_new_voice():
         # Build a voice deisgn object
         design = elevenlabs.VoiceDesign(
             name="Phoenix",
-            text="The quick brown fox jumps over the lazy dog, showcasing its agility and speed in a playful manner.",
+            text="The quick brown foxes jump over the lazy dogs, showcasing their agility and speed in a playful ways.",
             gender=elevenlabs.Gender.male,
             age=elevenlabs.Age.young,
             accent=elevenlabs.Accent.american,
