@@ -1,17 +1,13 @@
-import asyncio
 from collections import OrderedDict
 import elevenlabs
-from enum import Enum
 import functools
 import os
 from PIL import Image, ImageDraw, ImageOps
-from playsound import playsound
 import random
 import re
 import streamlit as st
 import tenacity
 from typing import List, Callable
-
 
 from langchain import PromptTemplate
 from langchain.chat_models import ChatOpenAI
@@ -512,7 +508,6 @@ class Message:
             self.markdown(content)
 
 
-# async def output(name, message):
 def output(name, message, sound_on=False, debug_sound=True):
     with Message(name) as m:
         m.write(f"{message}")
@@ -634,7 +629,6 @@ def main():
 
             while True:
                 name, message = simulator.step()
-                # await output(name, message)
                 output(name, message, sound_on, debug_sound)
                 if director.stop:
                     break
@@ -642,5 +636,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # asyncio.run(main())
     main()
