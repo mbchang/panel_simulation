@@ -1,5 +1,10 @@
 # Panel Simulations
-Generate a fake panel discussion about any topic for the AI SF Summit https://aisf.co/. Play with it [here](https://mbchang-panel-simulation-main-k6i8aa.streamlit.app/).
+Missed the [panel discussion](https://twitter.com/fdotinc/status/1659289306522095616) at the AI SF Summit https://aisf.co/ [happened](https://twitter.com/fdotinc/status/1660765461813006336) on May 19, 2023?
+
+Never fear, this repo allows you to re-simulate the panel discussion about any topic at your leisure.
+
+Play with it [here](https://mbchang-panel-simulation-main-k6i8aa.streamlit.app/).
+
 
 ## About
 
