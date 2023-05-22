@@ -83,7 +83,8 @@ def configure():
         st.sidebar.write("Sound is turned off.")
         eleven_api_key = ""
 
-    debug_sound = st.sidebar.checkbox("Debug Sound")
+    # debug_sound = st.sidebar.checkbox("Debug Sound")
+    debug_sound = False
 
     termination_probability = st.sidebar.slider(
         label="Termination Probability",
