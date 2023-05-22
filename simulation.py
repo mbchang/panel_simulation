@@ -259,8 +259,7 @@ def initialize_simulation(
     topic, agent_summaries, director_name, openai_api_model, termination_probability
 ):
     agent_summary_string = "\n- ".join(
-        [""]
-        + [f"{name}: {role}" for name, (role, description) in agent_summaries.items()]
+        [""] + [f"{agent.name}: {agent.title}" for agent in agent_summaries]
     )
 
     conversation_description = f"""This is a panel discussion at the AI San Francisco Summit focusing on the topic: {topic}.
@@ -291,18 +290,18 @@ def initialize_simulation(
         )
 
     agent_headers = [
-        generate_agent_header(name, role, description)
-        for name, (role, description) in agent_summaries.items()
+        generate_agent_header(agent.name, agent.title, agent.bio)
+        for agent in agent_summaries
     ]
     agent_system_messages = [
-        generate_agent_system_message(name, header)
-        for name, header in zip(agent_summaries, agent_headers)
+        generate_agent_system_message(agent.name, header)
+        for agent, header in zip(agent_summaries, agent_headers)
     ]
 
-    for name, header, system_message in zip(
+    for agent, header, system_message in zip(
         agent_summaries, agent_headers, agent_system_messages
     ):
-        print(f"\n\n{name}:")
+        print(f"\n\n{agent.name}:")
         print(f"\nHeader:\n{header}")
         print(f"\nSystem Message:\n{system_message.content}")
 
@@ -328,17 +327,17 @@ def initialize_simulation(
         name=director_name,
         system_message=agent_system_messages[0],
         model=ChatOpenAI(model_name=openai_api_model, temperature=0.5),
-        speakers=[name for name in agent_summaries if name != director_name],
+        speakers=[
+            agent.name for agent in agent_summaries if agent.name != director_name
+        ],
         stopping_probability=termination_probability,
     )
 
     agents = [director]
-    for name, system_message in zip(
-        list(agent_summaries.keys())[1:], agent_system_messages[1:]
-    ):
+    for agent, system_message in zip(agent_summaries[1:], agent_system_messages[1:]):
         agents.append(
             DialogueAgent(
-                name=name,
+                name=agent.name,
                 system_message=system_message,
                 model=ChatOpenAI(model_name=openai_api_model, temperature=0.2),
             )

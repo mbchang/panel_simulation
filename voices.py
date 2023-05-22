@@ -1,28 +1,4 @@
 import elevenlabs
-import streamlit as st
-
-
-def play_voice(text, name):
-    if name == "Hubert Thieblot":
-        voice = "Adam"
-    elif name == "Edward Saatchi":
-        voice = "Arnold"
-    elif name == "Jim Fan":
-        voice = "Josh"
-    elif name == "Joon Park":
-        voice = "Sam"
-    elif name == "Jack Soslow":
-        voice = "Antoni"
-    elif name == "Michael Chang":
-        voice = "Phoenix"
-    elif name == "Audience member":
-        voice = "Rachel"
-    else:
-        raise ValueError(f"No picture for name: {name}")
-
-    audio = elevenlabs.generate(text, voice=voice)
-    st.audio(audio)
-    # elevenlabs.play(audio)
 
 
 def create_new_voice():

@@ -1,4 +1,4 @@
-from collections import OrderedDict
+import elevenlabs
 import functools
 import re
 import streamlit as st
@@ -8,58 +8,127 @@ import gui
 import simulation
 
 
-def output(name, message, sound_on=False, debug_sound=True):
-    with gui.Message(name) as m:
-        m.write(f"{message}")
-    print(f"({name}): {message}")
-    print("\n")
+# maybe have a mixin?
+# how do I mkae the init method initalize from both super classes?
+class Speaker:
+    def __init__(self, name, voice="Rachel"):
+        self.name = name
+        self.voice = voice
 
-    # remove text delimited by asterisks from message
-    if sound_on:
-        message = re.sub(r"\*.*?\*", "", message)
-        if debug_sound:
-            voices.play_voice(message[:20], name=name)
-        else:
-            voices.play_voice(message, name=name)
+    def speak(self, message, sound_on, debug_sound):
+        if sound_on:
+            message = re.sub(r"\*.*?\*", "", message)
+            text = message[:20] if debug_sound else message
+            audio = elevenlabs.generate(text, voice=self.voice)
+            st.audio(audio)
+
+    def write(self, message):
+        st.markdown("*" + message + "*")
+        print(f"({self.name}): {message}")
+        print("\n")
+
+    def output(self, message, sound_on, debug_sound):
+        self.write(message)
+        self.speak(message, sound_on, debug_sound)
+
+
+# this should be in a new file.
+class Panelist(Speaker):
+    def __init__(
+        self,
+        name,
+        role,
+        title,
+        bio,
+        url,
+        icon_path,
+        voice,
+    ):
+        super().__init__(name, voice)
+        self.role = role
+        self.title = title
+        self.bio = bio
+        self.url = url
+        self.icon_path = icon_path
+
+    def url_markdown(self):
+        return f"[{self.name}]({self.url})"
+
+    def write(self, message):
+        with gui.Message(self) as m:
+            m.write(f"{message}")
+        print(f"({self.name}): {message}")
+        print("\n")
 
 
 def main():
+    title = "[AISF](https://aisf.co/) Panel Simulation"
     director_name = "Hubert Thieblot"
-    agent_summaries = OrderedDict(
-        {
-            "Hubert Thieblot": (
-                "Partner, Founders Inc",
-                "You are an entrepreneur best known for founding Curse Inc., a global multimedia and technology company that provides content and services related to video games, including community forums, video game databases, live streaming, and eSports team management.",
-            ),
-            "Edward Saatchi": (
-                "Founder, Fable Simulation",
-                "You co-founded Fable Studio, which focuses on creating 'virtual beings' - characters that use AI and VR to provide interactive and immersive storytelling experiences, and you are interested in using agent simulations as a new paradigm for training AGIs.",
-            ),
-            "Jim Fan": (
-                "AI Scientist, Nvidia",
-                "You built MineDojo, which is a multitask benchamrking suite 1000s of open-ended and language-prompted tasks, where the AI agents can freely explore a procedurally generated 3D world with diverse terrains to roam, materials to mine, tools to craft, structures to build, and wonders to discover.",
-            ),
-            "Joon Park": (
-                "PhD student, Stanford",
-                "You are known for your research on generative agents, which are computational software agents based on LLMs that simulate believable human behavior, demonstrating a virtual societ of 25 NPCs that exhibit various emergent social behaviors.",
-            ),
-            "Jack Soslow": (
-                "Partner, a16z",
-                "You are an investor at Andreessen Horowitz who has made investments in games, AR, VR, and AI, and you are interested in multi-agent simulations from the perspective of alignment, specialization, colective intelligence, and cultural impacts.",
-            ),
-            "Michael Chang": (
-                "Technical Staff, LangChain",
-                "You are an AI researcher studying reinforcement learning and recursive self-improvement, and you have built various demonstrations of how to implement various multi-agent dialogue simulations using LangChain, a popualar framework for composing LLMs into powerful applications.",
-            ),
-        }
-    )
+    agent_summaries = [
+        Panelist(
+            name="Hubert Thieblot",
+            role="moderator",
+            title="Partner, Founders Inc",
+            bio="You are an entrepreneur best known for founding Curse Inc., a global multimedia and technology company that provides content and services related to video games, including community forums, video game databases, live streaming, and eSports team management.",
+            url="https://en.wikipedia.org/wiki/Hubert_Thieblot",
+            icon_path="images/hubert.jpg",
+            voice="Adam",
+        ),
+        Panelist(
+            name="Edward Saatchi",
+            role="panelist",
+            title="Founder, Fable Simulation",
+            bio="You co-founded Fable Studio, which focuses on creating 'virtual beings' - characters that use AI and VR to provide interactive and immersive storytelling experiences, and you are interested in using agent simulations as a new paradigm for training AGIs.",
+            url="https://en.wikipedia.org/wiki/Edward_Saatchi",
+            icon_path="images/edward.jpeg",
+            voice="Arnold",
+        ),
+        Panelist(
+            name="Jim Fan",
+            role="panelist",
+            title="AI Scientist, Nvidia",
+            bio="You built MineDojo, which is a multitask benchamrking suite 1000s of open-ended and language-prompted tasks, where the AI agents can freely explore a procedurally generated 3D world with diverse terrains to roam, materials to mine, tools to craft, structures to build, and wonders to discover.",
+            url="https://jimfan.me/",
+            icon_path="images/jim.jpg",
+            voice="Josh",
+        ),
+        Panelist(
+            name="Joon Park",
+            role="panelist",
+            title="PhD student, Stanford",
+            bio="You are known for your research on generative agents, which are computational software agents based on LLMs that simulate believable human behavior, demonstrating a virtual societ of 25 NPCs that exhibit various emergent social behaviors.",
+            url="http://www.joonsungpark.com/",
+            icon_path="images/joon.jpg",
+            voice="Sam",
+        ),
+        Panelist(
+            name="Jack Soslow",
+            role="panelist",
+            title="Partner, a16z",
+            bio="You are an investor at Andreessen Horowitz who has made investments in games, AR, VR, and AI, and you are interested in multi-agent simulations from the perspective of alignment, specialization, colective intelligence, and cultural impacts.",
+            url="https://twitter.com/JackSoslow",
+            icon_path="images/jack.jpg",
+            voice="Antoni",
+        ),
+        Panelist(
+            name="Michael Chang",
+            role="panelist",
+            title="Technical Staff, LangChain",
+            bio="You are an AI researcher studying reinforcement learning and recursive self-improvement, and you have built various demonstrations of how to implement various multi-agent dialogue simulations using LangChain, a popualar framework for composing LLMs into powerful applications.",
+            url="https://mbchang.github.io/",
+            icon_path="images/michael.jpg",
+            voice="Phoenix",
+        ),
+    ]
+
+    names_to_panelists = {p.name: p for p in agent_summaries}
 
     (
         sound_on,
         debug_sound,
         termination_probability,
         openai_api_model,
-    ) = gui.initialize_gui(director_name, with_sound=True)
+    ) = gui.initialize_gui(title, agent_summaries, with_sound=True)
 
     topic = st.text_input(
         "Enter the topic for debate", "multi-agent chatbot simulations"
@@ -87,11 +156,11 @@ def main():
             )
             simulator.reset()
             simulator.inject("Audience member", specified_topic)
-            output("Audience member", specified_topic, sound_on, debug_sound)
+            Speaker("Audience member").output(specified_topic, sound_on, debug_sound)
 
             while True:
                 name, message = simulator.step()
-                output(name, message, sound_on, debug_sound)
+                names_to_panelists[name].output(message, sound_on, debug_sound)
                 if director.stop:
                     break
             st.write("*Finished discussion.*")
