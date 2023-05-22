@@ -55,13 +55,3 @@ def get_summary(agent_cfgs):
         [""] + [f"{agent.name}: {agent.title}" for agent in agent_cfgs]
     )
     return summary
-
-
-@dataclass
-class UserConfig:
-    openai_api_key: str = ""
-    eleven_api_key: str = ""
-    sound_on: bool = False
-    debug_sound: bool = False
-    termination_probability: float = 0.01
-    gpt_model: str = "gpt-3.5-turbo"

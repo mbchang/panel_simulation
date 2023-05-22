@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import os
 from PIL import Image, ImageDraw, ImageOps
 import re
@@ -5,12 +6,22 @@ import re
 import elevenlabs
 import streamlit as st
 
-import config
+import panel
 import ui
 
 ##########
 # VISUAL #
 ##########
+
+
+@dataclass
+class UserConfig:
+    openai_api_key: str = ""
+    eleven_api_key: str = ""
+    sound_on: bool = False
+    debug_sound: bool = False
+    termination_probability: float = 0.01
+    gpt_model: str = "gpt-3.5-turbo"
 
 
 def list_to_string(l):
@@ -83,7 +94,7 @@ def configure():
     )
 
     gpt_model = st.sidebar.selectbox("Model name", options=["gpt-3.5-turbo", "gpt-4"])
-    return config.UserConfig(
+    return panel.UserConfig(
         openai_api_key=openai_api_key,
         eleven_api_key=eleven_api_key,
         sound_on=sound_on,
@@ -94,7 +105,7 @@ def configure():
 
 
 def site_description(agent_cfgs):
-    director_name = config.get_director(agent_cfgs).name
+    director_name = panel.get_director(agent_cfgs).name
     return f"""Generate a fake panel discussion about any topic among fictitious renditions of
         {list_to_string([agent.url_markdown() for agent in agent_cfgs])}. {director_name} will moderate.
         """
@@ -204,7 +215,7 @@ class VisibleSpeaker(Speaker):
         self.icon_path = icon_path
 
     @classmethod
-    def from_config(cls, cfg: config.PanelistConfig):
+    def from_config(cls, cfg: panel.PanelistConfig):
         return cls(
             name=cfg.name, role=cfg.role, voice=cfg.voice, icon_path=cfg.icon_path
         )

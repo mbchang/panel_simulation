@@ -8,7 +8,7 @@ from langchain.schema import (
     SystemMessage,
 )
 
-import config
+import panel
 import ui
 import dialogue
 
@@ -53,7 +53,7 @@ def select_next_speaker(step: int, agents: List[dialogue.DialogueAgent]) -> int:
 def main():
     title = "[AISF](https://aisf.co/) Panel Simulation"
     agent_cfgs = [
-        config.PanelistConfig(
+        panel.PanelistConfig(
             name="Hubert Thieblot",
             role="director",
             title="Partner, Founders Inc",
@@ -62,7 +62,7 @@ def main():
             icon_path="images/hubert.jpg",
             voice="Adam",  # premade by elevenlabs
         ),
-        config.PanelistConfig(
+        panel.PanelistConfig(
             name="Edward Saatchi",
             role="panelist",
             title="Founder, Fable Simulation",
@@ -71,7 +71,7 @@ def main():
             icon_path="images/edward.jpeg",
             voice="Arnold",  # premade by elevenlabs
         ),
-        config.PanelistConfig(
+        panel.PanelistConfig(
             name="Jim Fan",
             role="panelist",
             title="AI Scientist, Nvidia",
@@ -80,7 +80,7 @@ def main():
             icon_path="images/jim.jpg",
             voice="Josh",  # premade by elevenlabs
         ),
-        config.PanelistConfig(
+        panel.PanelistConfig(
             name="Joon Park",
             role="panelist",
             title="PhD student, Stanford",
@@ -89,7 +89,7 @@ def main():
             icon_path="images/joon.jpg",
             voice="Sam",  # premade by elevenlabs
         ),
-        config.PanelistConfig(
+        panel.PanelistConfig(
             name="Jack Soslow",
             role="panelist",
             title="Partner, a16z",
@@ -98,7 +98,7 @@ def main():
             icon_path="images/jack.jpg",
             voice="Antoni",  # premade by elevenlabs
         ),
-        config.PanelistConfig(
+        panel.PanelistConfig(
             name="Michael Chang",
             role="panelist",
             title="Technical Staff, LangChain",
@@ -125,7 +125,7 @@ def main():
         with st.spinner("Initializing simulation..."):
             description = f"""This is a panel discussion at the AI San Francisco Summit focusing on the topic: {topic}.
 
-The panel features {config.get_summary(agent_cfgs)}."""
+The panel features {panel.get_summary(agent_cfgs)}."""
 
             specified_topic = generate_detailed_topic(description)
             print(f"Original topic:\n{topic}\n")
@@ -133,17 +133,17 @@ The panel features {config.get_summary(agent_cfgs)}."""
 
             model = ChatOpenAI(model_name=user_cfg.gpt_model, temperature=0.5)
 
-            director_config = config.get_director(agent_cfgs)
+            director_config = panel.get_director(agent_cfgs)
             director = dialogue.DirectorDialogueAgent(
                 name=director_config.name,
                 system_message=director_config.generate_system_message(description),
                 model=model,
-                speakers=[agent.name for agent in config.get_panelists(agent_cfgs)],
+                speakers=[agent.name for agent in panel.get_panelists(agent_cfgs)],
                 stopping_probability=user_cfg.termination_probability,
             )
 
             agents = [director]
-            for agent_cfg in config.get_panelists(agent_cfgs):
+            for agent_cfg in panel.get_panelists(agent_cfgs):
                 agents.append(
                     dialogue.DialogueAgent(
                         name=agent_cfg.name,
