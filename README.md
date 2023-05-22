@@ -19,7 +19,9 @@ Created by [Michael Chang](https://mbchang.github.io/) ([@mmmbchang](https://twi
 `pip install -r requirements.txt`
 
 ## Run
-`python -m streamlit run demo.py`
+First, obtain an [OpenAI API key](https://platform.openai.com/account/api-keys). If you want to listen to sound, also obtain an [ElevenLabs API key](https://beta.elevenlabs.io/).
+
+Run with: `python -m streamlit run main.py`
 
 ## Disclaimer
 
