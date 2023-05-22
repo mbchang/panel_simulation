@@ -5,6 +5,7 @@ Never fear, this repo allows you to re-simulate the panel discussion about any t
 
 Play with it [here](https://mbchang-panel-simulation-main-k6i8aa.streamlit.app/).
 
+![alt text](images/panel.jpeg)
 
 ## About
 
