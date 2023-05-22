@@ -122,6 +122,12 @@ def main():
     button = st.button("Run")
 
     if button:
+        if user_cfg.sound_on and not user_cfg.eleven_api_key:
+            st.error(
+                "You must enter an API key to use the Eleven API. Please enter an API key in the sidebar. Otherwise, disable sound."
+            )
+            return
+
         with st.spinner("*Initializing simulation...*"):
             description = f"""This is a panel discussion at the AI San Francisco Summit focusing on the topic: {topic}.
 
