@@ -178,7 +178,8 @@ The panel features {panel.get_summary(agent_cfgs)}."""
             )
 
             while True:
-                name, message = simulator.step()
+                with st.spinner("Next speaker is thinking..."):
+                    name, message = simulator.step()
                 speakers[name].output(message, user_cfg.sound_on, user_cfg.debug_sound)
                 if director.stop:
                     break

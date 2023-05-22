@@ -94,7 +94,7 @@ def configure():
     )
 
     gpt_model = st.sidebar.selectbox("Model name", options=["gpt-3.5-turbo", "gpt-4"])
-    return panel.UserConfig(
+    return UserConfig(
         openai_api_key=openai_api_key,
         eleven_api_key=eleven_api_key,
         sound_on=sound_on,
