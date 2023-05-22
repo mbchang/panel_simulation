@@ -3,9 +3,23 @@ import functools
 import re
 import streamlit as st
 
-import voices
 import gui
 import simulation
+
+
+def create_voice_if_nonexistent(name, gender, age, accent, accent_strength):
+    """Create a new voice if it does not exist."""
+    if not any(voice.name == name for voice in elevenlabs.voices()):
+        design = elevenlabs.VoiceDesign(
+            name="Phoenix",
+            text="The quick brown foxes jump over the lazy dogs, showcasing their agility and speed in a playful ways.",
+            gender=gender,
+            age=age,
+            accent=accent,
+            accent_strength=accent_strength,
+        )
+        elevenlabs.Voice.from_design(design)
+    return name
 
 
 # maybe have a mixin?
@@ -72,7 +86,7 @@ def main():
             bio="You are an entrepreneur best known for founding Curse Inc., a global multimedia and technology company that provides content and services related to video games, including community forums, video game databases, live streaming, and eSports team management.",
             url="https://en.wikipedia.org/wiki/Hubert_Thieblot",
             icon_path="images/hubert.jpg",
-            voice="Adam",
+            voice="Adam",  # premade by elevenlabs
         ),
         Panelist(
             name="Edward Saatchi",
@@ -81,7 +95,7 @@ def main():
             bio="You co-founded Fable Studio, which focuses on creating 'virtual beings' - characters that use AI and VR to provide interactive and immersive storytelling experiences, and you are interested in using agent simulations as a new paradigm for training AGIs.",
             url="https://en.wikipedia.org/wiki/Edward_Saatchi",
             icon_path="images/edward.jpeg",
-            voice="Arnold",
+            voice="Arnold",  # premade by elevenlabs
         ),
         Panelist(
             name="Jim Fan",
@@ -90,7 +104,7 @@ def main():
             bio="You built MineDojo, which is a multitask benchamrking suite 1000s of open-ended and language-prompted tasks, where the AI agents can freely explore a procedurally generated 3D world with diverse terrains to roam, materials to mine, tools to craft, structures to build, and wonders to discover.",
             url="https://jimfan.me/",
             icon_path="images/jim.jpg",
-            voice="Josh",
+            voice="Josh",  # premade by elevenlabs
         ),
         Panelist(
             name="Joon Park",
@@ -99,7 +113,7 @@ def main():
             bio="You are known for your research on generative agents, which are computational software agents based on LLMs that simulate believable human behavior, demonstrating a virtual societ of 25 NPCs that exhibit various emergent social behaviors.",
             url="http://www.joonsungpark.com/",
             icon_path="images/joon.jpg",
-            voice="Sam",
+            voice="Sam",  # premade by elevenlabs
         ),
         Panelist(
             name="Jack Soslow",
@@ -108,7 +122,7 @@ def main():
             bio="You are an investor at Andreessen Horowitz who has made investments in games, AR, VR, and AI, and you are interested in multi-agent simulations from the perspective of alignment, specialization, colective intelligence, and cultural impacts.",
             url="https://twitter.com/JackSoslow",
             icon_path="images/jack.jpg",
-            voice="Antoni",
+            voice="Antoni",  # premade by elevenlabs
         ),
         Panelist(
             name="Michael Chang",
@@ -117,7 +131,13 @@ def main():
             bio="You are an AI researcher studying reinforcement learning and recursive self-improvement, and you have built various demonstrations of how to implement various multi-agent dialogue simulations using LangChain, a popualar framework for composing LLMs into powerful applications.",
             url="https://mbchang.github.io/",
             icon_path="images/michael.jpg",
-            voice="Phoenix",
+            voice=create_voice_if_nonexistent(
+                "Phoenix",
+                gender=elevenlabs.Gender.male,
+                age=elevenlabs.Age.young,
+                accent=elevenlabs.Accent.american,
+                accent_strength=1.0,
+            ),
         ),
     ]
 
@@ -146,7 +166,7 @@ def main():
             )
 
         with st.spinner("Running simulation..."):
-            voices.initialize_voices()
+            elevenlabs.voices()  # initialize voices
 
             simulator = simulation.DialogueSimulator(
                 agents=agents,
