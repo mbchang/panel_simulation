@@ -8,9 +8,9 @@ from langchain.schema import (
     SystemMessage,
 )
 
+import dialogue
 import panel
 import ui
-import dialogue
 
 
 def generate_detailed_topic(conversation_description):
