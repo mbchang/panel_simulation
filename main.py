@@ -1,112 +1,68 @@
-from dataclasses import dataclass
 import elevenlabs
-import functools
-import re
 import streamlit as st
+from typing import List
 
-import gui
-import simulation
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import (
+    HumanMessage,
+    SystemMessage,
+)
 
-
-def create_voice_if_nonexistent(name, gender, age, accent, accent_strength):
-    """Create a new voice if it does not exist."""
-    if not any(voice.name == name for voice in elevenlabs.voices()):
-        design = elevenlabs.VoiceDesign(
-            name="Phoenix",
-            text="The quick brown foxes jump over the lazy dogs, showcasing their agility and speed in a playful ways.",
-            gender=gender,
-            age=age,
-            accent=accent,
-            accent_strength=accent_strength,
-        )
-        elevenlabs.Voice.from_design(design)
-    return name
+import config
+import ui
+import dialogue
 
 
-# maybe have a mixin?
-# how do I mkae the init method initalize from both super classes?
-class Speaker:
-    def __init__(self, name, voice="Rachel"):
-        self.name = name
-        self.voice = voice
+def generate_detailed_topic(conversation_description):
+    topic_specifier_prompt = [
+        SystemMessage(content="You can make a topic more specific."),
+        HumanMessage(
+            content=f"""{conversation_description}
 
-    def speak(self, message, sound_on, debug_sound):
-        if sound_on:
-            message = re.sub(r"\*.*?\*", "", message)
-            text = message[:20] if debug_sound else message
-            audio = elevenlabs.generate(text, voice=self.voice)
-            st.audio(audio)
-
-    def write(self, message):
-        st.markdown("*" + message + "*")
-        print(f"({self.name}): {message}")
-        print("\n")
-
-    def output(self, message, sound_on, debug_sound):
-        self.write(message)
-        self.speak(message, sound_on, debug_sound)
+            Please elaborate on the topic to generate hype about communication and human-AI interaction.
+            Frame the topic as a single question to be answered.
+            Be creative and imaginative.
+            Please reply with the specified topic in 50 words or less.
+            Do not add anything else."""
+        ),
+    ]
+    specified_topic = ChatOpenAI(temperature=1.0)(topic_specifier_prompt).content
+    return specified_topic
 
 
-@dataclass
-class PanelistConfig:
-    name: str
-    role: str
-    title: str
-    bio: str
-    url: str
-    icon_path: str
-    voice: str
+def select_next_speaker(step: int, agents: List[dialogue.DialogueAgent]) -> int:
+    """
+    If the step is even, then select the director (index 0)
+    Otherwise, the director selects the next speaker.
+    """
+    # validate that the first agent is instance of DirectorDialogueAgent
+    assert isinstance(agents[0], dialogue.DirectorDialogueAgent)
+    director = agents[0]
+    # validate all other agents are not the director
+    assert all([agent != director for agent in agents[1:]])
 
-    def url_markdown(self):
-        return f"[{self.name}]({self.url})"
-
-
-# this should be in a new file.
-class Panelist(Speaker):  # , simulation.DialogueAgent):
-    def __init__(
-        self,
-        name,
-        role,
-        title,
-        bio,
-        url,
-        icon_path,
-        voice,
-    ):
-        Speaker.__init__(self, name, voice)
-        # simulation.DialogueAgent.__init__(self, name, model)
-
-        self.role = role
-        self.title = title
-        self.bio = bio
-        self.url = url
-        self.icon_path = icon_path
-
-    @classmethod
-    def from_config(cls, config: PanelistConfig):
-        return cls(**config.__dict__)
-
-    def write(self, message):
-        with gui.Message(self) as m:
-            m.write(f"{message}")
-        print(f"({self.name}): {message}")
-        print("\n")
+    # the director speaks on odd steps
+    if step % 2 == 1:
+        idx = 0
+    else:
+        # here the director chooses the next speaker
+        idx = director.select_next_speaker() + 1  # +1 because we excluded the director
+    return idx
 
 
 def main():
     title = "[AISF](https://aisf.co/) Panel Simulation"
-    director_name = "Hubert Thieblot"
-    agent_summaries = [
-        PanelistConfig(
+    agent_cfgs = [
+        config.PanelistConfig(
             name="Hubert Thieblot",
-            role="moderator",
+            role="director",
             title="Partner, Founders Inc",
             bio="You are an entrepreneur best known for founding Curse Inc., a global multimedia and technology company that provides content and services related to video games, including community forums, video game databases, live streaming, and eSports team management.",
             url="https://en.wikipedia.org/wiki/Hubert_Thieblot",
             icon_path="images/hubert.jpg",
             voice="Adam",  # premade by elevenlabs
         ),
-        PanelistConfig(
+        config.PanelistConfig(
             name="Edward Saatchi",
             role="panelist",
             title="Founder, Fable Simulation",
@@ -115,7 +71,7 @@ def main():
             icon_path="images/edward.jpeg",
             voice="Arnold",  # premade by elevenlabs
         ),
-        PanelistConfig(
+        config.PanelistConfig(
             name="Jim Fan",
             role="panelist",
             title="AI Scientist, Nvidia",
@@ -124,7 +80,7 @@ def main():
             icon_path="images/jim.jpg",
             voice="Josh",  # premade by elevenlabs
         ),
-        PanelistConfig(
+        config.PanelistConfig(
             name="Joon Park",
             role="panelist",
             title="PhD student, Stanford",
@@ -133,7 +89,7 @@ def main():
             icon_path="images/joon.jpg",
             voice="Sam",  # premade by elevenlabs
         ),
-        PanelistConfig(
+        config.PanelistConfig(
             name="Jack Soslow",
             role="panelist",
             title="Partner, a16z",
@@ -142,14 +98,14 @@ def main():
             icon_path="images/jack.jpg",
             voice="Antoni",  # premade by elevenlabs
         ),
-        PanelistConfig(
+        config.PanelistConfig(
             name="Michael Chang",
             role="panelist",
             title="Technical Staff, LangChain",
             bio="You are an AI researcher studying reinforcement learning and recursive self-improvement, and you have built various demonstrations of how to implement various multi-agent dialogue simulations using LangChain, a popualar framework for composing LLMs into powerful applications.",
             url="https://mbchang.github.io/",
             icon_path="images/michael.jpg",
-            voice=create_voice_if_nonexistent(
+            voice=ui.create_voice_if_nonexistent(
                 "Phoenix",
                 gender=elevenlabs.Gender.male,
                 age=elevenlabs.Age.young,
@@ -159,16 +115,7 @@ def main():
         ),
     ]
 
-    # names_to_panelists = {p.name: p for p in agent_summaries}
-    panelists = {p.name: Panelist.from_config(p) for p in agent_summaries}
-
-    (
-        sound_on,
-        debug_sound,
-        termination_probability,
-        openai_api_model,
-    ) = gui.initialize_gui(title, agent_summaries, with_sound=True)
-
+    user_cfg = ui.initialize_gui(title, agent_cfgs)
     topic = st.text_input(
         "Enter the topic for debate", "multi-agent chatbot simulations"
     )
@@ -176,30 +123,63 @@ def main():
 
     if button:
         with st.spinner("Initializing simulation..."):
-            agents, director, specified_topic = simulation.initialize_simulation(
-                topic,
-                agent_summaries,
-                director_name,
-                openai_api_model,
-                termination_probability,
+            description = f"""This is a panel discussion at the AI San Francisco Summit focusing on the topic: {topic}.
+
+The panel features {config.get_summary(agent_cfgs)}."""
+
+            specified_topic = generate_detailed_topic(description)
+            print(f"Original topic:\n{topic}\n")
+            print(f"Detailed topic:\n{specified_topic}\n")
+
+            model = ChatOpenAI(model_name=user_cfg.gpt_model, temperature=0.5)
+
+            director_config = config.get_director(agent_cfgs)
+            director = dialogue.DirectorDialogueAgent(
+                name=director_config.name,
+                system_message=director_config.generate_system_message(description),
+                model=model,
+                speakers=[agent.name for agent in config.get_panelists(agent_cfgs)],
+                stopping_probability=user_cfg.termination_probability,
             )
+
+            agents = [director]
+            for agent_cfg in config.get_panelists(agent_cfgs):
+                agents.append(
+                    dialogue.DialogueAgent(
+                        name=agent_cfg.name,
+                        system_message=agent_cfg.generate_system_message(description),
+                        model=model,
+                    )
+                )
+
+            for agent in agents:
+                print(f"\n\n{agent.name}:")
+                print(f"\nSystem Message:\n{agent.system_message.content}")
+
+            speakers = {}
+            for agent_cfg in agent_cfgs:
+                speakers[agent_cfg.name] = ui.VisibleSpeaker(
+                    name=agent_cfg.name,
+                    role=agent_cfg.role,
+                    icon_path=agent_cfg.icon_path,
+                    voice=agent_cfg.voice,
+                )
 
         with st.spinner("Running simulation..."):
             elevenlabs.voices()  # initialize voices
 
-            simulator = simulation.DialogueSimulator(
-                agents=agents,
-                selection_function=functools.partial(
-                    simulation.select_next_speaker, director=director
-                ),
+            simulator = dialogue.DialogueSimulator(
+                agents=agents, selection_function=select_next_speaker
             )
             simulator.reset()
             simulator.inject("Audience member", specified_topic)
-            Speaker("Audience member").output(specified_topic, sound_on, debug_sound)
+            ui.Speaker("Audience member").output(
+                specified_topic, user_cfg.sound_on, user_cfg.debug_sound
+            )
 
             while True:
                 name, message = simulator.step()
-                panelists[name].output(message, sound_on, debug_sound)
+                speakers[name].output(message, user_cfg.sound_on, user_cfg.debug_sound)
                 if director.stop:
                     break
             st.write("*Finished discussion.*")
