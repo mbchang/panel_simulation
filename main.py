@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import elevenlabs
 import functools
 import re
@@ -46,8 +47,22 @@ class Speaker:
         self.speak(message, sound_on, debug_sound)
 
 
+@dataclass
+class PanelistConfig:
+    name: str
+    role: str
+    title: str
+    bio: str
+    url: str
+    icon_path: str
+    voice: str
+
+    def url_markdown(self):
+        return f"[{self.name}]({self.url})"
+
+
 # this should be in a new file.
-class Panelist(Speaker):
+class Panelist(Speaker):  # , simulation.DialogueAgent):
     def __init__(
         self,
         name,
@@ -58,15 +73,18 @@ class Panelist(Speaker):
         icon_path,
         voice,
     ):
-        super().__init__(name, voice)
+        Speaker.__init__(self, name, voice)
+        # simulation.DialogueAgent.__init__(self, name, model)
+
         self.role = role
         self.title = title
         self.bio = bio
         self.url = url
         self.icon_path = icon_path
 
-    def url_markdown(self):
-        return f"[{self.name}]({self.url})"
+    @classmethod
+    def from_config(cls, config: PanelistConfig):
+        return cls(**config.__dict__)
 
     def write(self, message):
         with gui.Message(self) as m:
@@ -79,7 +97,7 @@ def main():
     title = "[AISF](https://aisf.co/) Panel Simulation"
     director_name = "Hubert Thieblot"
     agent_summaries = [
-        Panelist(
+        PanelistConfig(
             name="Hubert Thieblot",
             role="moderator",
             title="Partner, Founders Inc",
@@ -88,7 +106,7 @@ def main():
             icon_path="images/hubert.jpg",
             voice="Adam",  # premade by elevenlabs
         ),
-        Panelist(
+        PanelistConfig(
             name="Edward Saatchi",
             role="panelist",
             title="Founder, Fable Simulation",
@@ -97,7 +115,7 @@ def main():
             icon_path="images/edward.jpeg",
             voice="Arnold",  # premade by elevenlabs
         ),
-        Panelist(
+        PanelistConfig(
             name="Jim Fan",
             role="panelist",
             title="AI Scientist, Nvidia",
@@ -106,7 +124,7 @@ def main():
             icon_path="images/jim.jpg",
             voice="Josh",  # premade by elevenlabs
         ),
-        Panelist(
+        PanelistConfig(
             name="Joon Park",
             role="panelist",
             title="PhD student, Stanford",
@@ -115,7 +133,7 @@ def main():
             icon_path="images/joon.jpg",
             voice="Sam",  # premade by elevenlabs
         ),
-        Panelist(
+        PanelistConfig(
             name="Jack Soslow",
             role="panelist",
             title="Partner, a16z",
@@ -124,7 +142,7 @@ def main():
             icon_path="images/jack.jpg",
             voice="Antoni",  # premade by elevenlabs
         ),
-        Panelist(
+        PanelistConfig(
             name="Michael Chang",
             role="panelist",
             title="Technical Staff, LangChain",
@@ -141,7 +159,8 @@ def main():
         ),
     ]
 
-    names_to_panelists = {p.name: p for p in agent_summaries}
+    # names_to_panelists = {p.name: p for p in agent_summaries}
+    panelists = {p.name: Panelist.from_config(p) for p in agent_summaries}
 
     (
         sound_on,
@@ -180,7 +199,7 @@ def main():
 
             while True:
                 name, message = simulator.step()
-                names_to_panelists[name].output(message, sound_on, debug_sound)
+                panelists[name].output(message, sound_on, debug_sound)
                 if director.stop:
                     break
             st.write("*Finished discussion.*")
