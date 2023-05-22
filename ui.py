@@ -36,7 +36,7 @@ def about_text():
     To address this challenge, this application uses a "director" agent to decide the order in which the agents speak.
     You can find an example of how to implement this in the [LangChain docs](https://python.langchain.com/en/latest/use_cases/agent_simulations/multiagent_authoritarian.html).
 
-    Created by [Michael Chang](https://mbchang.github.io/) ([@mmmbchang](https://twitter.com/mmmbchang)) at [LangChain](https://python.langchain.com/en/latest/).
+    Created by [Michael Chang](https://mbchang.github.io/) ([@mmmbchang](https://twitter.com/mmmbchang)) at [LangChain](https://python.langchain.com/en/latest/). [Github](https://github.com/mbchang/panel_simulation).
     """
 
 
