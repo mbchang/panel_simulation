@@ -1,5 +1,5 @@
 # Panel Simulations
-Missed the [panel discussion](https://twitter.com/fdotinc/status/1659289306522095616) at the AI SF Summit https://aisf.co/ [happened](https://twitter.com/fdotinc/status/1660765461813006336) on May 19, 2023?
+Missed the [panel discussion](https://twitter.com/fdotinc/status/1659289306522095616) at the AI SF Summit https://aisf.co/ that [happened](https://twitter.com/fdotinc/status/1660765461813006336) on May 19, 2023?
 
 Never fear, with this repo you can re-simulate the discussion with the panelists about any topic at your leisure.
 
