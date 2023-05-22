@@ -40,4 +40,3 @@ and
 [Eleven Labs](https://beta.elevenlabs.io/).
 The UI design was inspired by [WhatIfGPT](https://github.com/realminchoi/whatifgpt).
 Thank you to the LangChain team for their support and feedback.
-
