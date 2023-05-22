@@ -122,7 +122,7 @@ def main():
     button = st.button("Run")
 
     if button:
-        with st.spinner("Initializing simulation..."):
+        with st.spinner("*Initializing simulation...*"):
             description = f"""This is a panel discussion at the AI San Francisco Summit focusing on the topic: {topic}.
 
 The panel features {panel.get_summary(agent_cfgs)}."""
@@ -165,7 +165,7 @@ The panel features {panel.get_summary(agent_cfgs)}."""
                     voice=agent_cfg.voice,
                 )
 
-        with st.spinner("Running simulation..."):
+        with st.spinner("*Running simulation...*"):
             elevenlabs.voices()  # initialize voices
 
             simulator = dialogue.DialogueSimulator(
@@ -178,7 +178,7 @@ The panel features {panel.get_summary(agent_cfgs)}."""
             )
 
             while True:
-                with st.spinner("Next speaker is thinking..."):
+                with st.spinner("*Next speaker is thinking...*"):
                     name, message = simulator.step()
                 speakers[name].output(message, user_cfg.sound_on, user_cfg.debug_sound)
                 if director.stop:

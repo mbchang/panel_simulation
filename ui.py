@@ -196,16 +196,17 @@ class Speaker:
         st.audio(audio)
 
     def write(self, message):
-        st.markdown("*" + message + "*")
+        st.markdown(message)
         print(f"({self.name}): {message}")
         print("\n")
 
     def output(self, message, sound_on, debug_sound):
         self.write(message)
         if sound_on:
-            if debug_sound:
-                message = message[:20]
-            self.speak(message)
+            with st.spinner(f"*{self.name} is about to speak...*"):
+                if debug_sound:
+                    message = message[:20]
+                self.speak(message)
 
 
 class VisibleSpeaker(Speaker):
