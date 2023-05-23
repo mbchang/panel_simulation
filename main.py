@@ -117,7 +117,7 @@ def main():
 
     user_cfg = ui.initialize_gui(title, agent_cfgs)
     topic = st.text_input(
-        "Enter the topic for debate", "multi-agent chatbot simulations"
+        "Enter the topic for discussion", "multi-agent chatbot simulations"
     )
     button = st.button("Run")
 
